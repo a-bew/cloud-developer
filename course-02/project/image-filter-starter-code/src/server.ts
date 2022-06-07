@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
+import fs from 'fs';
 
 (async () => {
 
@@ -12,6 +13,12 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
+
+    // Root Endpoint
+  // Displays a simple message to the user
+  app.get( "/", async ( req, res ) => {
+    res.send("try GET /filteredimage?image_url={{}}")
+  } );
 
   // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
   // GET /filteredimage?image_url={{URL}}
@@ -30,12 +37,35 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   /**************************************************************************** */
 
   //! END @TODO1
-  
-  // Root Endpoint
-  // Displays a simple message to the user
-  app.get( "/", async ( req, res ) => {
-    res.send("try GET /filteredimage?image_url={{}}")
-  } );
+  app.get("/filteredimage", async (req: any, res: any) => {
+
+    const { image_url } = req.query;
+    try {
+
+      if (!image_url){
+        return res.status(400).send("An image path is required");
+      }
+
+      // 1. validate the image_url query
+      if (!fs.existsSync(image_url)) {
+        // path exists
+          return res.status(400).send("path does not exists: " +image_url)
+      }
+
+      // 2. call filterImageFromURL(image_url) to filter the image
+      const imageFile = await filterImageFromURL(image_url)
+
+      // 3. send the resulting file in the response
+      res.send(imageFile)
+
+      // 4. deletes any files on the server on finish of the response
+      deleteLocalFiles([imageFile])
+
+    } catch (error) {
+      res.status(500).send("Server Error")
+    }
+
+  })
   
 
   // Start the Server
