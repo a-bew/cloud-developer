@@ -1,10 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import {filterImageFromURL, deleteLocalFiles} from './util/util';
-import fs from 'fs';
-
+import { filterImageFromURL, deleteLocalFiles } from './util/util';
+const isImageURL = require('image-url-validator').default;
+// 
 (async () => {
-
   // Init the Express application
   const app = express();
 
@@ -40,16 +39,18 @@ import fs from 'fs';
   app.get("/filteredimage", async (req: any, res: any) => {
 
     const { image_url } = req.query;
+
     try {
 
       if (!image_url){
-        return res.status(400).send("An image path is required");
+        return res.status(400).send("No image url is provided");
       }
 
       // 1. validate the image_url query
-      if (!fs.existsSync(image_url)) {
-        // path exists
-          return res.status(400).send("path does not exists: " +image_url)
+      const is_image = await isImageURL(image_url)
+
+      if (!is_image) {
+        return res.status(422).send("A valid image url is required");
       }
 
       // 2. call filterImageFromURL(image_url) to filter the image
@@ -62,7 +63,9 @@ import fs from 'fs';
       deleteLocalFiles([imageFile])
 
     } catch (error) {
+
       res.status(500).send("Server Error")
+
     }
 
   })
