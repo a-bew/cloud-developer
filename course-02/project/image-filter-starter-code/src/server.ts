@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { filterImageFromURL, deleteLocalFiles } from './util/util';
+import { filterImageFromURL, deleteLocalFiles, base64_encode } from './util/util';
 const isImageURL = require('image-url-validator').default;
 // 
 (async () => {
@@ -56,8 +56,10 @@ const isImageURL = require('image-url-validator').default;
       // 2. call filterImageFromURL(image_url) to filter the image
       const imageFile = await filterImageFromURL(image_url)
 
+      var base64str = base64_encode(imageFile);
+
       // 3. send the resulting file in the response
-      res.send(imageFile)
+      res.json({message: `data:image/png;base64,${base64str}`})
 
       // 4. deletes any files on the server on finish of the response
       deleteLocalFiles([imageFile])

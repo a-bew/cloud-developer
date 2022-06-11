@@ -1,5 +1,6 @@
 import fs from "fs";
 import Jimp = require("jimp");
+const imageToBase64 = require('image-to-base64');
 
 // filterImageFromURL
 // helper function to download, filter, and save the filtered image locally
@@ -36,4 +37,14 @@ export async function deleteLocalFiles(files: Array<string>) {
   for (let file of files) {
     fs.unlinkSync(file);
   }
+}
+
+
+// function to encode file data to base64 encoded string
+export function base64_encode(file: number | fs.PathLike) {
+  // try {
+    // read binary data
+    var imageAsBase64 = fs.readFileSync(file, 'base64');
+    // convert binary data to base64 encoded string
+    return imageAsBase64    
 }
