@@ -1,6 +1,5 @@
 import fs from "fs";
 import Jimp = require("jimp");
-const imageToBase64 = require('image-to-base64');
 
 // filterImageFromURL
 // helper function to download, filter, and save the filtered image locally
