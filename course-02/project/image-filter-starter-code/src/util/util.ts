@@ -37,13 +37,3 @@ export async function deleteLocalFiles(files: Array<string>) {
     fs.unlinkSync(file);
   }
 }
-
-
-// function to encode file data to base64 encoded string
-export function base64_encode(file: number | fs.PathLike) {
-  // try {
-    // read binary data
-    var imageAsBase64 = fs.readFileSync(file, 'base64');
-    // convert binary data to base64 encoded string
-    return imageAsBase64    
-}
